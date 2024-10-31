@@ -1,0 +1,275 @@
+<style>
+    /* Overall styles */
+    body {
+        font-family: 'Outfit', sans-serif;
+        background-color: #2b2b2b; /* Dark background */
+        color: white;
+        margin: 0; /* Remove default margin */
+        padding: 20px; /* Add some padding */
+    }
+
+    /* Container for the bundle card */
+    .bundle-card {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: transparent; /* Make background transparent */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Add subtle shadow for depth */
+    }
+
+    /* Circular Progress Bar */
+    .progress-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        position: relative;
+        margin: 0 auto 20px;
+    }
+
+    .progress-circle .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        clip: rect(0, 150px, 150px, 75px);
+        background-color: green; /* Default color */
+        transform: rotate(0deg);
+        transition: transform 0.5s ease;
+    }
+
+    .progress-circle .circle.fill {
+        background-color: rgba(0, 255, 0, 0.8); /* Filled color */
+    }
+
+    /* Text inside the circle */
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+    }
+
+    /* Accordion styles */
+    .accordion {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Accordion header */
+    .accordion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Accordion header hover effect */
+    .accordion-header:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Accordion content */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease; /* Transition padding */
+        background-color: rgba(40, 40, 40, 0.9); /* Darker background for content */
+        padding: 0 15px;
+    }
+
+    /* Active accordion content */
+    .accordion-content.active {
+        max-height: 200px; /* Adjust based on content */
+        padding: 15px; /* Set padding when active */
+    }
+
+    /* Bundle option checkbox */
+    .bundle-checkbox {
+        margin-right: 10px;
+    }
+
+    /* Bundle option title */
+    .bundle-option-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Bundle option price styling */
+    .bundle-option-price {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 20px; /* Increased size for visibility */
+        font-weight: bold;
+    }
+
+    /* Bundle details styling */
+    .bundle-details {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        margin: 10px 0;
+    }
+
+    /* Total price and savings section */
+    .total-section {
+        margin-top: 20px;
+        font-size: 18px;
+        padding: 10px;
+        border-radius: 8px;
+     
+    }
+
+    .total-label {
+        font-weight: bold;
+        color: rgba(0, 255, 0, 1); /* Bright green for emphasis */
+    }
+</style>
+</head>
+<body>
+
+<!-- Bundle Card Structure -->
+<div class="bundle-card" id="bundleCard">
+
+    <!-- Circular Progress Bar -->
+    <div class="progress-circle">
+        <div class="circle" id="progressCircle"></div>
+        <div class="progress-text" id="progressText">$0.00</div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">
+            <div class="bundle-option-title">Bundle 1</div>
+            <div class="bundle-option-price" data-price="10">$10</div>
+        </div>
+        <div class="accordion-content">
+            <input type="checkbox" class="bundle-checkbox" id="bundle1-checkbox" value="10">
+            <label for="bundle1-checkbox">Select this bundle</label>
+            <div class="bundle-details">
+                <p>Includes: Feature A, Feature B, and Feature C.</p>
+                <p>Benefits: Access to premium content, priority support, etc.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">
+            <div class="bundle-option-title">Bundle 2</div>
+            <div class="bundle-option-price" data-price="15">$15</div>
+        </div>
+        <div class="accordion-content">
+            <input type="checkbox" class="bundle-checkbox" id="bundle2-checkbox" value="15">
+            <label for="bundle2-checkbox">Select this bundle</label>
+            <div class="bundle-details">
+                <p>Includes: Feature D, Feature E, and Feature F.</p>
+                <p>Benefits: Special discounts, exclusive content, etc.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">
+            <div class="bundle-option-title">Bundle 3</div>
+            <div class="bundle-option-price" data-price="20">$20</div>
+        </div>
+        <div class="accordion-content">
+            <input type="checkbox" class="bundle-checkbox" id="bundle3-checkbox" value="20">
+            <label for="bundle3-checkbox">Select this bundle</label>
+            <div class="bundle-details">
+                <p>Includes: Feature G, Feature H, and Feature I.</p>
+                <p>Benefits: One-on-one consultations, custom solutions, etc.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">
+            <div class="bundle-option-title">Bundle 4</div>
+            <div class="bundle-option-price" data-price="25">$25</div>
+        </div>
+        <div class="accordion-content">
+            <input type="checkbox" class="bundle-checkbox" id="bundle4-checkbox" value="25">
+            <label for="bundle4-checkbox">Select this bundle</label>
+            <div class="bundle-details">
+                <p>Includes: Feature J, Feature K, and Feature L.</p>
+                <p>Benefits: Access to webinars, community support, etc.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">
+            <div class="bundle-option-title">Bundle 5</div>
+            <div class="bundle-option-price" data-price="30">$30</div>
+        </div>
+        <div class="accordion-content">
+            <input type="checkbox" class="bundle-checkbox" id="bundle5-checkbox" value="30">
+            <label for="bundle5-checkbox">Select this bundle</label>
+            <div class="bundle-details">
+                <p>Includes: Feature M, Feature N, and Feature O.</p>
+                <p>Benefits: Comprehensive resources, premium access, etc.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Price and Savings Section -->
+    <div class="total-section">
+        <div class="total-label">Total Price: $<span id="totalPrice">0.00</span></div>
+        <div class="total-label">Total Savings: $<span id="totalSavings">0.00</span></div>
+    </div>
+</div>
+
+<script>
+    // JavaScript for accordion functionality
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+
+            // Toggle active class for the clicked content
+            content.classList.toggle('active');
+
+            // Calculate max height for animation
+            if (content.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + 'px'; // Expand to full height
+            } else {
+                content.style.maxHeight = null; // Collapse
+            }
+
+            // Update price
+            updatePrice();
+        });
+    });
+
+    // Function to update the total price and circular progress
+    function updatePrice() {
+        const checkboxes = document.querySelectorAll('.bundle-checkbox');
+        let total = 0;
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                total += parseFloat(checkbox.value);
+            }
+        });
+
+        // Update total price display
+        document.getElementById('totalPrice').innerText = total.toFixed(2);
+        document.getElementById('progressText').innerText = `$${total.toFixed(2)}`;
+
+        // Calculate percentage for circular progress
+        const totalPrice = 100; // Set the maximum price limit for the circle
+        const percentage = Math.min((total / totalPrice) * 100, 100); // Ensure it doesn't exceed 100%
+        document.getElementById('progressCircle').style.transform = `rotate(${percentage * 3.6}deg)`;
+    }
+</script>
+
+</body>
