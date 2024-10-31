@@ -1,0 +1,107 @@
+<style>
+    .bundle-card {
+        font-family: 'Outfit', sans-serif;
+        width: 100%;
+        background-color: transparent;
+        color: #ffffff;
+        padding: 20px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    .bundle-options {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .bundle-option {
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .bundle-option input[type="checkbox"] {
+        margin-right: 15px;
+        transform: scale(1.2);
+    }
+    .pricing-info {
+        display: flex;
+        justify-content: space-between;
+        background-color: transparent;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 20px;
+        margin-bottom: 0px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
+    }
+</style>
+<div class="bundle-card" id="bundleCard">
+    <div class="bundle-options">
+        <label class="bundle-option">
+            <input type="checkbox" value="10"> Bundle 1 - $10
+        </label>
+        <label class="bundle-option">
+            <input type="checkbox" value="15"> Bundle 2 - $15
+        </label>
+        <label class="bundle-option">
+            <input type="checkbox" value="20"> Bundle 3 - $20
+        </label>
+        <label class="bundle-option">
+            <input type="checkbox" value="25"> Bundle 4 - $25
+        </label>
+        <label class="bundle-option">
+            <input type="checkbox" value="30"> Bundle 5 - $30
+        </label>
+        <label class="bundle-option">
+            <input type="checkbox" value="35"> Bundle 6 - $35
+        </label>
+    </div>
+    <div class="pricing-info">
+        <div id="totalPrice">Total Price: $0</div>
+        <div id="savings">You Saved: $0</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+(function($) {
+    var bundleCard = document.getElementById('bundleCard');
+    if (bundleCard) {
+        var bundleOptions = bundleCard.querySelectorAll('.bundle-option input');
+        var totalPriceElement = bundleCard.querySelector('#totalPrice');
+        var savingsElement = bundleCard.querySelector('#savings');
+
+        function updatePricing() {
+            var totalPrice = 0;
+            var regularPrice = 0;
+            
+            bundleOptions.forEach(function(option) {
+                var price = parseInt(option.value);
+                if (option.checked) {
+                    totalPrice += price;
+                }
+                regularPrice += price;
+            });
+
+            var savings = regularPrice - totalPrice;
+            
+            if (totalPrice > 0) {
+                savings += Math.floor(totalPrice * 0.1);
+                totalPrice = Math.floor(totalPrice * 0.9);
+            }
+
+            totalPriceElement.textContent = 'Total Price: $' + totalPrice;
+            savingsElement.textContent = 'You Saved: $' + savings;
+        }
+
+        bundleOptions.forEach(function(option) {
+            option.addEventListener('change', updatePricing);
+        });
+
+        updatePricing();
+    }
+})(jQuery);
+</script>
