@@ -1,384 +1,425 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --primary-color: #4CAF50;
-      --text-color: #ffffff;
-      --card-bg: rgba(30, 41, 59, 0.3);
-      --border-color: rgba(51, 65, 85, 0.5);
-      --hover-color: rgba(30, 41, 59, 0.6);
-      --description-color: #94a3b8;
-      --success-color: #10b981;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .container {
-      display: flex;
-      height: 100vh;
-      background-color: transparent;
-      padding: 1.5rem;
-      gap: 2rem;
-      max-height: 100vh;
-      overflow: hidden;
-    }
-
-    /* Bundle Section Styles */
-    .bundle-section {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 1rem;
-    }
-
-    .title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--text-color);
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.025em;
-    }
-
-    .bundle-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .bundle-row {
-      display: flex;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      background-color: var(--card-bg);
-      border-radius: 0.75rem;
-      transition: all 0.2s ease;
-      border: 1px solid var(--border-color);
-      backdrop-filter: blur(8px);
-    }
-
-    .bundle-row:hover {
-      transform: translateX(4px);
-      background-color: var(--hover-color);
-    }
-
-    .bundle-info {
-      flex-grow: 1;
-    }
-
-    .bundle-info h3 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    .description {
-      color: var(--description-color);
-      font-size: 0.875rem;
-      margin: 0.25rem 0 0 0;
-    }
-
-    .price {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-color);
-      margin: 0 2rem;
-    }
-
-    /* Switch Toggle Styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 28px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: var(--border-color);
-      transition: .3s;
-      border-radius: 34px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--primary-color);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(22px);
-    }
-
-    /* Graph Section Styles */
-    .graph-section {
-      width: 280px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-left: 1px solid var(--border-color);
-      padding: 1rem;
-    }
-
-    .graph-container {
-      position: relative;
-      width: 180px;
-      height: 180px;
-    }
-
-    .progress-ring {
-      transform: rotate(-90deg);
-    }
-
-    .progress-ring-circle-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.1);
-      stroke-width: 8;
-    }
-
-    .progress-ring-circle {
-      fill: none;
-      stroke: var(--primary-color);
-      stroke-width: 8;
-      stroke-dasharray: 565.48;
-      stroke-dashoffset: 565.48;
-      transition: stroke-dashoffset 0.3s ease;
-    }
-
-    .graph-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      width: 100%;
-    }
-
-    .total-price {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    .total-label {
-      font-size: 0.875rem;
-      color: var(--description-color);
-      margin: 0.25rem 0;
-    }
-
-    .savings {
-      font-size: 0.875rem;
-      color: var(--success-color);
-      margin: 0;
-    }
-
-    /* Custom Scrollbar */
-    .bundle-section::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .bundle-section::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .bundle-section::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 3px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        padding: 1rem;
-        height: 100vh;
-      }
-
-      .graph-section {
-        width: 100%;
-        border-left: none;
-        border-top: 1px solid var(--border-color);
-        padding-top: 1rem;
-      }
-
-      .bundle-section {
-        padding-right: 0;
-      }
-
-      .title {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-
-      .bundle-row {
-        padding: 0.875rem;
-      }
-
-      .price {
-        margin: 0 1rem;
-      }
-
-      .graph-container {
-        width: 150px;
-        height: 150px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Bundle Selection Section -->
+<div class="container">
     <div class="bundle-section">
-      <h1 class="title">Select Your Bundles</h1>
+      <div class="glass-title">Choose Your Bundle</div>
       
       <div class="bundle-list">
         <div class="bundle-row">
           <div class="bundle-info">
-            <h3>Essential Bundle</h3>
-            <p class="description">Basic features for starters</p>
+            <h3>Essential</h3>
+            <div class="features">
+              <span>Core Features</span>
+            </div>
           </div>
-          <div class="price">$10</div>
-          <label class="switch">
-            <input type="checkbox" class="bundle-checkbox" value="10">
-            <span class="slider"></span>
-          </label>
+          <div class="price-column">
+            <div class="price">$10</div>
+            <label class="switch">
+              <input type="checkbox" class="bundle-checkbox" value="10">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
-
+  
         <div class="bundle-row">
           <div class="bundle-info">
-            <h3>Pro Bundle</h3>
-            <p class="description">Advanced features for professionals</p>
+            <h3>Pro</h3>
+            <div class="features">
+              <span>Priority Support</span>
+            </div>
           </div>
-          <div class="price">$15</div>
-          <label class="switch">
-            <input type="checkbox" class="bundle-checkbox" value="15">
-            <span class="slider"></span>
-          </label>
+          <div class="price-column">
+            <div class="price">$15</div>
+            <label class="switch">
+              <input type="checkbox" class="bundle-checkbox" value="15">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
-
+  
+        <div class="bundle-row recommended">
+          <div class="recommended-badge">POPULAR</div>
+          <div class="bundle-info">
+            <h3>Business</h3>
+            <div class="features">
+              <span>Team Features</span>
+            </div>
+          </div>
+          <div class="price-column">
+            <div class="price">$20</div>
+            <label class="switch">
+              <input type="checkbox" class="bundle-checkbox" value="20">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+  
         <div class="bundle-row">
           <div class="bundle-info">
-            <h3>Business Bundle</h3>
-            <p class="description">Complete solution for teams</p>
+            <h3>Enterprise</h3>
+            <div class="features">
+              <span>Dedicated Support</span>
+            </div>
           </div>
-          <div class="price">$20</div>
-          <label class="switch">
-            <input type="checkbox" class="bundle-checkbox" value="20">
-            <span class="slider"></span>
-          </label>
+          <div class="price-column">
+            <div class="price">$25</div>
+            <label class="switch">
+              <input type="checkbox" class="bundle-checkbox" value="25">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
-
+  
         <div class="bundle-row">
           <div class="bundle-info">
-            <h3>Enterprise Bundle</h3>
-            <p class="description">Full-scale enterprise solution</p>
+            <h3>Ultimate</h3>
+            <div class="features">
+              <span>All Features</span>
+            </div>
           </div>
-          <div class="price">$25</div>
-          <label class="switch">
-            <input type="checkbox" class="bundle-checkbox" value="25">
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="bundle-row">
-          <div class="bundle-info">
-            <h3>Ultimate Bundle</h3>
-            <p class="description">Everything plus premium support</p>
+          <div class="price-column">
+            <div class="price">$30</div>
+            <label class="switch">
+              <input type="checkbox" class="bundle-checkbox" value="30">
+              <span class="slider"></span>
+            </label>
           </div>
-          <div class="price">$30</div>
-          <label class="switch">
-            <input type="checkbox" class="bundle-checkbox" value="30">
-            <span class="slider"></span>
-          </label>
         </div>
       </div>
     </div>
-
-    <!-- Graph Section -->
+  
     <div class="graph-section">
       <div class="graph-container">
-        <svg class="progress-ring" width="180" height="180">
-          <circle class="progress-ring-circle-bg" cx="90" cy="90" r="80"/>
-          <circle class="progress-ring-circle" cx="90" cy="90" r="80"/>
+        <svg class="progress-ring" width="200" height="200">
+          <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"/>
+          <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
         </svg>
         <div class="graph-content">
-          <h2 class="total-price">$0.00</h2>
+          <h2 class="total-price">$0</h2>
           <p class="total-label">Total Price</p>
-          <p class="savings">Savings: $0.00</p>
+          <div class="savings-chip">
+            <span class="savings">$0</span>
+            <span class="savings-label">saved</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
+  
+  <style>
+  .container {
+    display: flex;
+    height: 100vh;
+    color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+  }
+  
+  /* Bundle Section Styles */
+  .bundle-section {
+    width: 80%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .glass-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-block;
+  }
+  
+  .bundle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: calc(100vh - 6rem);
+  }
+  
+  .bundle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .bundle-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .bundle-row.recommended {
+    background: linear-gradient(45deg, rgba(127, 127, 213, 0.1), rgba(134, 168, 231, 0.1));
+    border: 1px solid rgba(145, 234, 228, 0.3);
+  }
+  
+  .recommended-badge {
+    position: absolute;
+    top: 0;
+    right: 1rem;
+    background: linear-gradient(135deg, #7f7fd5, #86a8e7);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+  
+  .bundle-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .bundle-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    min-width: 100px;
+  }
+  
+  .features {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .features span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .price-column {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #91eae4;
+    min-width: 60px;
+    text-align: right;
+  }
+  
+  /* Switch Toggle Styles */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transition: .3s;
+    border-radius: 34px;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: #ffffff;
+    transition: .3s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background: linear-gradient(135deg, #7f7fd5, #86a8e7);
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+  
+  /* Graph Section Styles */
+  .graph-section {
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  
+  .graph-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+  
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  
+  .progress-ring-circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 8;
+  }
+  
+  .progress-ring-circle {
+    fill: none;
+    stroke: url(#gradient);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 565.48;
+    stroke-dashoffset: 565.48;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+  
+  .graph-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+  }
+  
+  .total-price {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #7f7fd5, #86a8e7, #91eae4);
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  
+  .total-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0.25rem 0;
+  }
+  
+  .savings-chip {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(145, 234, 228, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  
+  .savings {
+    font-weight: 600;
+    color: #91eae4;
+  }
+  
+  .savings-label {
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  </style>
+  
   <script>
-    document.querySelectorAll('.bundle-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', updateTotal);
+  // Add gradient definition to SVG
+  const svg = document.querySelector('.progress-ring');
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  gradient.setAttribute('id', 'gradient');
+  gradient.setAttribute('gradientTransform', 'rotate(90)');
+  
+  const stops = [
+    { offset: '0%', color: '#7f7fd5' },
+    { offset: '50%', color: '#86a8e7' },
+    { offset: '100%', color: '#91eae4' }
+  ];
+  
+  stops.forEach(({offset, color}) => {
+    const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop.setAttribute('offset', offset);
+    stop.setAttribute('stop-color', color);
+    gradient.appendChild(stop);
+  });
+  
+  defs.appendChild(gradient);
+  svg.insertBefore(defs, svg.firstChild);
+  
+  document.querySelectorAll('.bundle-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', updateTotal);
+  });
+  
+  function updateTotal() {
+    const checkboxes = document.querySelectorAll('.bundle-checkbox');
+    let total = 0;
+    let count = 0;
+    
+    checkboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        total += parseFloat(checkbox.value);
+        count++;
+      }
     });
-
-    function updateTotal() {
-      const checkboxes = document.querySelectorAll('.bundle-checkbox');
-      let total = 0;
-      let originalTotal = 0;
+  
+    // Calculate savings (15% off when selecting 3 or more bundles)
+    const savings = count >= 3 ? total * 0.15 : 0;
+    const finalTotal = total - savings;
+  
+    // Update price display with animation
+    animateValue(document.querySelector('.total-price'), total - savings);
+    animateValue(document.querySelector('.savings'), savings, '$');
+  
+    // Update progress ring
+    const circle = document.querySelector('.progress-ring-circle');
+    const maxValue = 100; // Maximum expected value
+    const percentage = Math.min((total / maxValue) * 100, 100);
+    const circumference = 565.48;
+    const offset = circumference - (percentage / 100 * circumference);
+    circle.style.strokeDashoffset = offset;
+  }
+  
+  function animateValue(element, value, prefix = '$') {
+    const duration = 600;
+    const startValue = parseFloat(element.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+    const startTime = performance.now();
+  
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
       
-      checkboxes.forEach(checkbox => {
-        const value = parseFloat(checkbox.value);
-        originalTotal += value;
-        if (checkbox.checked) {
-          total += value;
-        }
-      });
-
-      // Calculate savings (10% off when selecting multiple bundles)
-      const savings = total > 0 ? total * 0.1 : 0;
-      const finalTotal = total - savings;
-
-      // Update price display
-      document.querySelector('.total-price').textContent = `$${finalTotal.toFixed(2)}`;
-      document.querySelector('.savings').textContent = `Savings: $${savings.toFixed(2)}`;
-
-      // Update progress ring
-      const circle = document.querySelector('.progress-ring-circle');
-      const maxValue = 100; // Maximum expected value
-      const percentage = Math.min((total / maxValue) * 100, 100);
-      const circumference = 502.65; // 2 * π * 80
-      const offset = circumference - (percentage / 100 * circumference);
-      circle.style.strokeDashoffset = offset;
+      const currentValue = startValue + (value - startValue) * easeOutQuart(progress);
+      element.textContent = `${prefix}${currentValue.toFixed(2)}`;
+  
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
     }
+  
+    requestAnimationFrame(update);
+  }
+  
+  function easeOutQuart(x) {
+    return 1 - Math.pow(1 - x, 4);
+  }
   </script>
-</body>
-</html>
