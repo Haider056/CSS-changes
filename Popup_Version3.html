@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --text-color: #ffffff;
+      --card-bg: rgba(30, 41, 59, 0.3);
+      --border-color: rgba(51, 65, 85, 0.5);
+      --hover-color: rgba(30, 41, 59, 0.6);
+      --description-color: #94a3b8;
+      --success-color: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      background-color: transparent;
+      padding: 1.5rem;
+      gap: 2rem;
+      max-height: 100vh;
+      overflow: hidden;
+      flex-direction: row;
+    }
+
+    .bundle-section {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.025em;
+      text-align: center;
+    }
+
+    .bundle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .bundle-row {
+      background-color: var(--card-bg);
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .bundle-header {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .bundle-header:hover {
+      background-color: var(--hover-color);
+    }
+
+    .bundle-info {
+      flex-grow: 1;
+    }
+
+    .bundle-info h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .description {
+      color: var(--description-color);
+      font-size: 0.875rem;
+      margin: 0.25rem 0 0 0;
+    }
+
+    .price {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0 2rem;
+    }
+
+    .bundle-content {
+      display: none;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .bundle-content.active {
+      display: block;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .toggle-item {
+      flex: 1;
+      position: relative;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-color);
+      font-size: 0.475rem;
+    }
+
+    .toggle-tooltip {
+    position: absolute;
+    top: -40px;
+    left: 0%;
+    transform: translateX(-50%);
+    transform: translateY(-50%);
+    background-color: var(--hover-color);
+    color: var(--text-color);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    white-space: normal; 
+    max-width: 400px; 
+    word-wrap: break-word; 
+}
+
+.toggle-item:hover .toggle-tooltip {
+    opacity: 1;
+}
+
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border-color);
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(15px);
+    }
+
+    .graph-section {
+      width: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid var(--border-color);
+      padding: 1rem;
+    }
+
+    .graph-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 8;
+    }
+
+    .progress-ring-circle {
+      fill: none;
+      stroke: var(--primary-color);
+      stroke-width: 8;
+      stroke-dasharray: 565.48;
+      stroke-dashoffset: 565.48;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .graph-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 100%;
+    }
+
+    .total-price {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .total-label {
+      font-size: 0.875rem;
+      color: var(--description-color);
+      margin: 0.25rem 0;
+    }
+
+    .savings {
+      font-size: 0.875rem;
+      color: var(--success-color);
+      margin: 0;
+    }
+
+    .bundle-section::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .bundle-section::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .bundle-section::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .final-button {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .bundle-button {
+      font-size: 20px;
+      padding: 15px 40px;
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .bundle-button:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 1rem;
+        height: 100vh;
+      }
+
+      .graph-section {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+      }
+
+      .bundle-section {
+        padding-right: 0;
+      }
+
+      .title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .bundle-header {
+        padding: 0.875rem;
+      }
+
+      .price {
+        margin: 0 1rem;
+      }
+
+      .graph-container {
+        width: 150px;
+        height: 150px;
+      }
+
+      .toggle-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bundle-section">
+      <h1 class="title">Select Your Bundles</h1>
+      
+      <div class="bundle-list">
+        <!-- Bundle rows will be generated by JavaScript -->
+      </div>
+    </div>
+
+    <div class="graph-section">
+      <div class="graph-container">
+        <svg class="progress-ring" width="180" height="180">
+          <circle class="progress-ring-circle-bg" cx="90" cy="90" r="80"/>
+          <circle class="progress-ring-circle" cx="90" cy="90" r="80"/>
+        </svg>
+        <div class="graph-content">
+          <h2 class="total-price">$0.00</h2>
+          <p class="total-label">Total Price</p>
+          <p class="savings">Savings: $0.00</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="final-button">
+    <button class="bundle-button">Select Bundle</button>
+  </div>
+
+  <script>
+    const bundleData = [
+      {
+        name: 'Website',
+        description: 'Basic features for starters',
+        price: 10,
+        features: [
+          { name: 'Foundation Package', tooltip: 'Creative posts & Reels(8/Month),Story & Highlight Deisgn(4/month),1 story upload/day' },
+          { name: 'BluePrint Package', tooltip: 'Access to essential features' },
+          { name: 'Monolith Package', tooltip: 'Regular software updates' }
+        ]
+      },
+      {
+        name: 'SEO',
+        description: 'Advanced features for professionals',
+        price: 15,
+        features: [
+          { name: 'Foundation Package', tooltip: '24/7 priority email and chat support' },
+          { name: 'BluePrint Package', tooltip: 'Access to professional features' },
+          { name: 'Monolith Package', tooltip: 'Detailed analytics and reporting' }
+        ]
+      },
+      {
+        name: 'ADS',
+        description: 'Complete solution for teams',
+        price: 20,
+        features: [
+          { name: 'Foundation Package', tooltip: 'Dedicated team support' },
+          { name: 'BluePrint Package', tooltip: 'Advanced team collaboration features' },
+          { name: 'Monolith Package', tooltip: 'Custom API integration options' }
+        ]
+      },
+      {
+        name: 'SMM',
+        description: 'Full-scale enterprise solution',
+        price: 25,
+        features: [
+          { name: 'Foundation Package', tooltip: '24/7 dedicated support team' },
+          { name: 'BluePrint Package', tooltip: 'Custom feature development' },
+          { name: 'Monolith Package', tooltip: 'Guaranteed response times' }
+        ]
+      },
+      {
+        name: 'SMS',
+        description: 'Everything plus premium support',
+        price: 30,
+        features: [
+          { name: 'Foundation Package', tooltip: 'White-glove support service' },
+          { name: 'BluePrint Package', tooltip: 'Access to all current and future features' },
+          { name: 'Monolith Package', tooltip: 'Priority feature development' }
+        ]
+      },
+      {
+        name: 'Emails',
+        description: 'Everything plus premium support',
+        price: 30,
+        features: [
+          { name: 'Foundation Package', tooltip: 'White-glove support service' },
+          { name: 'BluePrint Package', tooltip: 'Access to all current and future features' },
+          { name: 'Monolith Package', tooltip: 'Priority feature development' }
+        ]
+      }
+    ];
+
+    function createBundleRows() {
+      const bundleList = document.querySelector('.bundle-list');
+      bundleList.innerHTML = bundleData.map((bundle, index) => `
+        <div class="bundle-row">
+          <div class="bundle-header" onclick="toggleAccordion(${index})">
+            <div class="bundle-info">
+              <h3>${bundle.name}</h3>
+              <p class="description">${bundle.description}</p>
+            </div>
+            <div class="price">$${bundle.price}</div>
+          </div>
+          <div class="bundle-content" id="bundle-${index}">
+            <div class="toggle-group">
+              ${bundle.features.map(feature => `
+                <div class="toggle-item">
+                  <div class="toggle-tooltip">${feature.tooltip}</div>
+                  <label class="toggle-label">
+                    ${feature.name}
+                    <div class="switch">
+                      <input type="checkbox" class="feature-toggle" data-bundle="${index}" value="${bundle.price / 3}">
+                      <span class="slider"></span>
+                    </div>
+                  </label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners to all toggles
+      document.querySelectorAll('.feature-toggle').forEach(toggle => {
+        toggle.addEventListener('change', updateTotal);
+      });
+    }
+
+    function toggleAccordion(index) {
+      const content = document.getElementById(`bundle-${index}`);
+      const isActive = content.classList.contains('active');
+      
+      // Close all accordions
+      document.querySelectorAll('.bundle-content').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Open clicked accordion if it wasn't already active
+      if (!isActive) {
+        content.classList.add('active');
+      }
+    }
+
+    function updateTotal() {
+      const toggles = document.querySelectorAll('.feature-toggle');
+      let total = 0;
+      
+      toggles.forEach(toggle => {
+        if (toggle.checked) {
+          total += parseFloat(toggle.value);
+        }
+      });
+
+      // Calculate savings (10% off when total is over $20)
+      const savings = total > 20 ? total * 0.1 : 0;
+      const finalTotal = total - savings;
+
+      // Update price display
+      document.querySelector('.total-price').textContent = `$${finalTotal.toFixed(2)}`;
+      document.querySelector('.savings').textContent = `Savings: $${savings.toFixed(2)}`;
+
+      // Update progress ring
+      const circle = document.querySelector('.progress-ring-circle');
+      const maxValue = 100;
+      const percentage = Math.min((total / maxValue) * 100, 100);
+      const circumference = 502.65;
+      const offset = circumference - (percentage / 100 * circumference);
+      circle.style.strokeDashoffset = offset;
+    }
+
+    // Initialize the bundle rows
+    createBundleRows();
+  </script>
+</body>
+</html>
