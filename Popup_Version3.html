@@ -337,7 +337,9 @@
             font-size: 1.5rem;
         }
 
-        .email-input {
+        .email-input,
+        .name-input,
+        .phone-input {
             width: 100%;
             padding: 0.75rem;
             margin: 1rem 0;
@@ -347,9 +349,12 @@
             color: var(--text-color);
         }
 
-        .email-input::placeholder {
+        .email-input::placeholder,
+        .name-input::placeholder,
+        .phone-input::placeholder {
             color: var(--description-color);
         }
+
 
         .submit-button {
             width: 100%;
@@ -444,12 +449,15 @@
     <div class="modal" id="emailModal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2 class="modal-title">Enter Your Email Address</h2>
+            <h2 class="modal-title">Enter Your Details</h2>
+            <input type="text" class="name-input" placeholder="Your Name" required>
+            <input type="tel" class="phone-input" placeholder="Your Phone Number" required>
             <input type="email" class="email-input" placeholder="your@email.com" required>
             <p class="error-message">Please enter a valid email address</p>
             <button class="submit-button">Submit</button>
         </div>
     </div>
+
 
     <div class="final-button">
         <button class="bundle-button">Select Bundle</button>
@@ -605,6 +613,8 @@
         const closeBtn = document.querySelector('.close-modal');
         const submitBtn = document.querySelector('.submit-button');
         const emailInput = document.querySelector('.email-input');
+        const phoneInput = document.querySelector('.phone-input');
+        const nameInput = document.querySelector('.name-input');
         const errorMessage = document.querySelector('.error-message');
         const bundleButton = document.querySelector('.bundle-button');
 
@@ -616,6 +626,8 @@
             modal.style.display = 'none';
             errorMessage.style.display = 'none';
             emailInput.value = '';
+            phoneInput.value = '';
+            nameInput.value = '';
         });
 
         window.addEventListener('click', (e) => {
@@ -623,6 +635,8 @@
                 modal.style.display = 'none';
                 errorMessage.style.display = 'none';
                 emailInput.value = '';
+                phoneInput.value = '';
+                nameInput.value = '';
             }
         });
 
@@ -648,17 +662,38 @@
             return selectedFeatures;
         }
 
-        function sendEmail(userEmail, selectedFeatures, totalPrice, savings) {
+        submitBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            if (!validateEmail(email)) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+
+            const selectedFeatures = getSelectedFeatures();
+            const totalPrice = parseFloat(document.querySelector('.total-price').textContent.slice(1));
+            const savings = parseFloat(document.querySelector('.savings').textContent.split('$')[1]);
+
+            sendEmail(email, name, phone, selectedFeatures, totalPrice, savings);
+        });
+
+        function sendEmail(userEmail, name, phone, selectedFeatures, totalPrice, savings) {
             const formattedFeatures = selectedFeatures.map(feature => `${feature.bundle}: ${feature.feature}`).join(', ');
             const emailData = {
-                action: 'send_email',  // Specify the AJAX action name
+                action: 'send_email',
                 userEmail: userEmail,
-                selectedFeatures: formattedFeatures,  // Format selected features without prices
+                name: name,
+                phone: phone,
+                selectedFeatures: formattedFeatures,
                 totalPrice: totalPrice,
                 savings: savings,
             };
 
-            fetch(my_ajax_object.ajax_url, {  // Use the AJAX URL from localized script
+            fetch(my_ajax_object.ajax_url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -679,32 +714,10 @@
                 });
         }
 
-
-
-        submitBtn.addEventListener('click', () => {
-            const email = emailInput.value.trim();
-
-            if (!validateEmail(email)) {
-                errorMessage.style.display = 'block';
-                return;
-            }
-
-            errorMessage.style.display = 'none';
-
-            const selectedFeatures = getSelectedFeatures();
-
-            // Ensure selectedFeatures is an array
-            const selectedFeaturesArray = Array.isArray(selectedFeatures) ? selectedFeatures : Object.values(selectedFeatures);
-
-            const selectedFeaturesString = selectedFeaturesArray.join(', ');
-
-            const totalPrice = parseFloat(document.querySelector('.total-price').textContent.slice(1));
-            const savings = parseFloat(document.querySelector('.savings').textContent.split('$')[1]);
-
-            sendEmail(email, selectedFeatures, totalPrice, savings);
-        });
-
     </script>
 </body>
 
 </html>
+
+
+
