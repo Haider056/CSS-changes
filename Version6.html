@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --text-color: #ffffff;
+            --card-bg: rgba(30, 41, 59, 0.3);
+            --border-color: rgba(51, 65, 85, 0.5);
+            --hover-color: rgba(30, 41, 59, 0.6);
+            --description-color: #94a3b8;
+            --success-color: #10b981;
+            --modal-bg: rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            background-color: transparent;
+            padding: 1.5rem;
+            gap: 2rem;
+            max-height: 100vh;
+            overflow: hidden;
+            flex-direction: row;
+        }
+
+        .bundle-section {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            text-align: center;
+        }
+
+        .bundle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .bundle-row {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+        }
+
+        .bundle-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .bundle-header:hover {
+            background-color: var(--hover-color);
+        }
+
+        .bundle-info {
+            flex-grow: 1;
+        }
+
+        .bundle-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .description {
+            color: var(--description-color);
+            font-size: 0.875rem;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 2rem;
+        }
+
+        .bundle-content {
+            display: none;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .bundle-content.active {
+            display: block;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .toggle-item {
+            flex: 1;
+            position: relative;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+            font-size: 0.475rem;
+        }
+        .toggle-tooltip{
+            color: white;
+        }
+
+        .toggle-item {
+            position: relative;
+        }
+
+        .description-tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            background-color: var(--hover-color);
+            color: var(--text-color);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            white-space: normal;
+            width: 200px;
+            height:fit-content;
+            word-wrap: break-word;
+        }
+
+        .toggle-item:hover .description-tooltip {
+            opacity: 1;
+        }
+
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .graph-section {
+            width: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid var(--border-color);
+            padding: 1rem;
+        }
+
+        .graph-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 8;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 565.48;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .graph-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .total-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .total-label {
+            font-size: 0.875rem;
+            color: var(--description-color);
+            margin: 0.25rem 0;
+        }
+
+        .savings {
+            font-size: 0.875rem;
+            color: var(--success-color);
+            margin: 0;
+        }
+
+        .bundle-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .bundle-section::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .bundle-section::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .final-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bundle-button {
+            font-size: 20px;
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .bundle-button:hover {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--card-bg);
+            margin: 15% auto;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(16px);
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .email-input,
+        .name-input,
+        .phone-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .email-input::placeholder,
+        .name-input::placeholder,
+        .phone-input::placeholder {
+            color: var(--description-color);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .submit-button:hover {
+            opacity: 0.9;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 1rem;
+                height: 100vh;
+            }
+
+            .graph-section {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+                padding-top: 1rem;
+            }
+
+            .bundle-section {
+                padding-right: 0;
+            }
+
+            .title {
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .bundle-header {
+                padding: 0.875rem;
+            }
+
+            .price {
+                margin: 0 1rem;
+            }
+
+            .graph-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .graph-content {
+                margin-left: 12px;
+                margin-top: 11px;
+            }
+
+            .toggle-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="bundle-section">
+            <h1 class="title">Select Your Bundles</h1>
+            <div class="bundle-list">
+                <!-- Bundle rows will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="graph-section">
+            <div class="graph-container">
+                <svg class="progress-ring" width="180" height="180">
+                    <circle class="progress-ring-circle-bg" cx="90" cy="90" r="80" />
+                    <circle class="progress-ring-circle" cx="90" cy="90" r="80" />
+                </svg>
+                <div class="graph-content">
+                    <h2 class="total-price">$0.00</h2>
+                    <p class="total-label">Total Price</p>
+                    <p class="savings">Savings: $0.00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">Enter Your Details</h2>
+            <input type="text" class="name-input" placeholder="Your Name" required>
+            <input type="tel" class="phone-input" placeholder="Your Phone Number" required>
+            <input type="email" class="email-input" placeholder="your@email.com" required>
+            <p class="error-message">Please enter a valid email address</p>
+            <button class="submit-button">Submit</button>
+        </div>
+    </div>
+
+    <div class="final-button">
+        <button class="bundle-button">Select Bundle</button>
+    </div>
+
+    <script>
+
+  window.bundleData = [
+            {
+                name: 'Website',
+                description: 'Basic features for starters',
+                price: 849,
+                packages: [
+                    { name: 'Foundation', price: 849 ,description:'1 Page Website, 2 Stock Photos, 2 Revisions, Monthly Maintenance'},
+                    { name: 'Blueprint', price: 1249,description:'5 Pages Website, 6 Stock Photos, 1 Email Account, 2 Revisions/page, Monthly Maintenance' },
+                    { name: 'Monolith', price: 1649 ,description:'8 Page Website, 10 Stock Photos,5 Email Accounts, 2 Revisions/page, Monthly Maintenance'}
+                ]
+            },
+            {
+                name: 'SEO',
+                description: 'Search Engine Optimization',
+                price: 799,
+                packages: [
+                    { name: 'Foundation', price: 799 ,description:'3 Blogs/Month, In-depth Analysis, 15 keywords Research, On page Optimization,Technical SEO'},
+                    { name: 'Blueprint', price: 1499 ,description:'5 Blogs/Month, In-depth Analysis, 30 keywords Research, On page Optimization,Technical SEO'},
+                    { name: 'Monolith', price: 1950 ,description:'8 Blogs/Month, In-depth Analysis, 50 keywords Research, On page Optimization,Technical SEO'}
+                ]
+            },
+            {
+                name: 'ADS',
+                description: 'Paid ADS',
+                price: 499,
+                packages: [
+                    { name: 'Foundation', price: 499 ,description:'Keyword Analysis , Pixel integration, Conversion Tracking Setup,Campaign Management on META and google,Monthly Performance overview'},
+                    { name: 'Blueprint', price: 799 ,description:'Advanced Keyword Analysis , Pixel integration, Multi-Platform Ad Creative Design,Landing Page Optimization Suggestions,Enhanced Audience Segmentation & Targeting'},
+                    { name: 'Monolith', price: 1499 ,description:'Comprehensive Keyword Analysis , Pixel integration, Custom Ad Creative Design,Dedicated Landing Page Optimization Suggestions,Advanced Audience Segmentation & Targeting'}
+                ]
+            },
+            {
+                name: 'SMM',
+                description: 'Social Media Marketing',
+                price: 599,
+                packages: [
+                    { name: 'Foundation', price: 599,description:'Social Media Analysis Report , Creative Post & Reels (08/Month), Story & Highlight Design (04/Month),1 Story Upload / Day,Page Display & Cover Design' },
+                    { name: 'Blueprint', price: 999 ,description:'Social Media Analysis Report , Creative Post & Reels (15/Month), Story & Highlight Design (04/Month),1 Story Upload / Day,Page Display & Cover Design'},
+                    { name: 'Monolith', price: 2199,description:'Social Media Analysis Report , Creative Post & Reels (Recommendation Based), Story & Highlight Design (08/Month),2 Stories Upload / Day,Page Display & Cover Design' }
+                ]
+            },
+            {
+                name: 'SMS & Emails',
+                description: 'SMS & Emails',
+                price: 599,
+                packages: [
+                    { name: 'Foundation', price: 599,description:'Template-Based Email & SMS Campaign Design , Campaign Management, Basic Performance Tracking,Single Automated Follow-Up Sequence' },
+                    { name: 'Blueprint', price: 1199,description:'Custom Email & SMS Campaign , Multi-Channel Campaign, Conversion Tracking ,Automated Drip Campaigns'  },
+                    { name: 'Monolith', price: 1799,description:'Comprehensive Database Segmentation , High-End Custom Campaign Designs, Cross-Channel Campaign Management ,Detailed Conversion and Engagement Tracking'  }
+                ]
+            },
+
+        ];
+
+    (function () {
+        window.toggleAccordion = function(index) {
+            const content = document.getElementById(`bundle-${index}`);
+            const isActive = content.classList.contains('active');
+            document.querySelectorAll('.bundle-content').forEach(item => item.classList.remove('active'));
+            if (!isActive) {
+                content.classList.add('active');
+            }
+        };
+
+       
+        function createBundleRows() {
+            const bundleList = document.querySelector('.bundle-list');
+            bundleList.innerHTML = bundleData.map((bundle, index) => `
+                <div class="bundle-row">
+                    <div class="bundle-header" onclick="toggleAccordion(${index})">
+                        <div class="bundle-info">
+                            <h3>${bundle.name}</h3>
+                            <p class="description">${bundle.description}</p>
+                        </div>
+                        <div class="price">$${bundle.price}</div>
+                    </div>
+                    <div class="bundle-content" id="bundle-${index}">
+                        <div class="toggle-group">
+                            ${bundle.packages.map((package, packageIndex) => `
+                                <div class="toggle-item" data-description="${package.description}">
+                                    <label class="toggle-label">
+                                        ${package.name}
+                                        <div class="switch">
+                                            <input type="checkbox" class="feature-toggle" data-bundle="${index}" data-package="${packageIndex}" value="${package.price}">
+                                            <span class="slider"></span>
+                                        </div>
+                                    </label>
+                                    <div class="description-tooltip">${package.description}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.feature-toggle').forEach(toggle => {
+                toggle.addEventListener('change', updateTotal);
+            });
+        }
+
+        function updateTotal() {
+            const toggles = document.querySelectorAll('.feature-toggle');
+            let total = 0;
+            const selectedBundles = new Set();
+            const selectedFeatures = [];
+
+            toggles.forEach(toggle => {
+                if (toggle.checked) {
+                    const bundleIndex = toggle.dataset.bundle;
+                    selectedBundles.add(bundleIndex);
+                    total += parseFloat(toggle.value);
+                    selectedFeatures.push(bundleIndex);
+                }
+            });
+
+            // Apply discounts
+            let discount = 0;
+            if (selectedBundles.size === 2) {
+                discount = total * 0.1;  // 10% discount for choosing two bundles
+            } else if (selectedBundles.size > 2) {
+                discount = total * 0.2;  // 20% discount for choosing more than two bundles
+            }
+
+            const finalTotal = total - discount;
+
+            // Update display
+            document.querySelector('.total-price').textContent = `$${finalTotal.toFixed(0)}`;
+            document.querySelector('.savings').textContent = `Savings: $${discount.toFixed(0)}`;
+
+            // Update progress ring
+            const circle = document.querySelector('.progress-ring-circle');
+            const maxValue = 10000;
+            const percentage = Math.min((finalTotal / maxValue) * 100, 100);
+            const circumference = 502.65;
+            const offset = circumference - (percentage / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        createBundleRows();
+    })();
+
+    // Define getSelectedFeatures in the global scope
+    function getSelectedFeatures() {
+        const selectedFeatures = [];
+        document.querySelectorAll('.feature-toggle').forEach(toggle => {
+            if (toggle.checked) {
+                const bundleIndex = toggle.dataset.bundle;
+                const bundle = bundleData[bundleIndex];
+                const featureIndex = Array.from(toggle.closest('.toggle-group').querySelectorAll('.feature-toggle')).indexOf(toggle);
+                selectedFeatures.push({
+                    bundle: bundle.name,
+                    feature: bundle.packages[featureIndex].name,
+                    price: parseFloat(toggle.value),
+                });
+            }
+        });
+        return selectedFeatures;
+    }
+
+    (function () {
+        const modal = document.getElementById('emailModal');
+        const closeBtn = document.querySelector('.close-modal');
+        const submitBtn = document.querySelector('.submit-button');
+        const emailInput = document.querySelector('.email-input');
+        const phoneInput = document.querySelector('.phone-input');
+        const nameInput = document.querySelector('.name-input');
+        const errorMessage = document.querySelector('.error-message');
+        const bundleButton = document.querySelector('.bundle-button');
+
+        bundleButton.addEventListener('click', () => modal.style.display = 'block');
+        closeBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        function closeModal() {
+            modal.style.display = 'none';
+            errorMessage.style.display = 'none';
+            emailInput.value = '';
+            phoneInput.value = '';
+            nameInput.value = '';
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        submitBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            if (!validateEmail(email)) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+
+            const selectedFeatures = getSelectedFeatures();
+            const totalPrice = parseFloat(document.querySelector('.total-price').textContent.slice(1));
+            const savings = parseFloat(document.querySelector('.savings').textContent.split('$')[1]);
+
+            sendEmail(email, name, phone, selectedFeatures, totalPrice, savings);
+        });
+
+        function sendEmail(userEmail, name, phone, selectedFeatures, totalPrice, savings) {
+            const formattedFeatures = selectedFeatures.map(feature => `${feature.bundle}: ${feature.feature}`).join(', ');
+            const emailData = {
+                action: 'send_email',
+                userEmail: userEmail,
+                name: name,
+                phone: phone,
+                selectedFeatures: formattedFeatures,
+                totalPrice: totalPrice,
+                savings: savings,
+            };
+
+            fetch(my_ajax_object.ajax_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(emailData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Thank you! A confirmation email has been sent.');
+                    } else {
+                        alert('There was an error processing your request: ' + data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your request. Please try again.');
+                });
+        }
+    })();
+</script>
+</body>
+</html>
